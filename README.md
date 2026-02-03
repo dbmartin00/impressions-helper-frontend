@@ -1,70 +1,54 @@
-# Getting Started with Create React App
+# Impressions Helper React Frontend 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The impressions helper is a dashboard featuring a heat map of impression usage by date and flag name.  An analyst can quickly find the "hot spots" of flag evaluation, even with hundreds of flags.
 
-## Available Scripts
+The backend is a simple lambda that uses an Athena query to retrieve data and pass it to the frontend.
 
-In the project directory, you can run:
+## Installing
 
-### `npm start`
+Involved. 
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Set up a Harness FME S3 integration.  It will take several weeks to fill, but proceed with these insuctions, noting the bucket name.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Install the impressions helper lambda [lambda git repo here]. The lambda uses Athena.  Harness FME s3 integration is the root, and then data is marshalled as tables into Athena. 
 
-### `npm test`
+Assuming your database is "split", create a database and then create a table for querying impressions.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+CREATE EXTERNAL TABLE IF NOT EXISTS split.impressions4 (
+  key STRING,
+  label STRING,
+  treatment STRING,
+  splitName STRING,
+  splitVersion INT,
+  environmentId STRING,
+  trafficTypeId STRING,
+  sdk STRING,
+  sdkVersion STRING,
+  timestamp INT,
+  receptionTimestamp INT
+)
+STORED AS PARQUET
+LOCATION 's3://impressions-for-____/schema-v1/';
+```
 
-### `npm run build`
+Note that you should use your S3 Harness FME bucket name as LOCATION.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Deploy this repo as a React application.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Supply an environment variable:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+export REACT_APP_HARNESS_IMPRESSIONS_HELPER=<path to impression help lambda function url>
+```
 
-### `npm run eject`
+## Data Arrival
+It can take days or weeks for the table to fill up. Query the table with Athena to be sure data is arriving.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Then deploy this React application.  Use environment variable REACT_APP_HARNESS_IMPRESSIONS_HELPER to specify the URL of the backend lambda.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Expected Dashboard
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Basic stats about impressions, plus an expansive heat map illustrating where flags are being tested across all environments.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
