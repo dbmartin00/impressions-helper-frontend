@@ -10,7 +10,7 @@ Involved.
 
 Set up a Harness FME S3 integration.  It will take several weeks to fill, but proceed with these insuctions, noting the bucket name.
 
-Install the impressions helper lambda [lambda git repo here]. The lambda uses Athena.  Harness FME s3 integration is the root, and then data is marshalled as tables into Athena. 
+Install the impressions helper lambda [Lambda Backend Repo](https://github.com/dbmartin00/impressions-helper-backend). The lambda uses Athena.  Harness FME s3 integration is the root, and then data is marshalled as tables into Athena. 
 
 Assuming your database is "split", create a database and then create a table for querying impressions.
 
